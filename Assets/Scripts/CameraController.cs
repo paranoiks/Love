@@ -36,10 +36,13 @@ public class CameraController : MonoBehaviour {
 
     private GameObject[,] CurrentGrid;
 
+    private bool CameraMoving = false;
+
 	// Use this for initialization
 	void Start () {       
         CamerasParent.transform.position = new Vector3(Globals.WorldSize / 2, Globals.WorldSize / 2, Globals.WorldSize / 2);
         CurrentCameraPosition = CameraPosition.CameraFront;
+        CameraHolder.transform.localPosition = CameraFrontTransform.localPosition;        
         CurrentGrid = new GameObject[Globals.WorldSize, Globals.WorldSize];
 	}
 
@@ -49,6 +52,10 @@ public class CameraController : MonoBehaviour {
     /// </summary>
     private void HandleInput()
     {
+        if(CameraMoving)
+        {
+            return;
+        }
         if (Input.GetKeyDown(KeyCode.W)
             && CurrentCameraPosition == CameraPosition.CameraZoomedOut)
         {            
@@ -90,7 +97,8 @@ public class CameraController : MonoBehaviour {
     /// </summary>
     /// <returns></returns>
     private IEnumerator MoveCamera()
-    {        
+    {
+        CameraMoving = true;
         float frames = 60f;
         Transform targetTransform = null;
         //find the target transform depending on the new CameraPosition
@@ -133,6 +141,8 @@ public class CameraController : MonoBehaviour {
         //set the position and rotation to the final ones to remove any errors and offsets
         CameraHolder.transform.localPosition = targetTransform.localPosition;
         MainCamera.transform.localRotation = targetTransform.localRotation;
+
+        CameraMoving = false;
     }
 
     /// <summary>

@@ -9,19 +9,31 @@ public class LevelCreationScript : MonoBehaviour {
     [SerializeField]
     private GameObject SoulPrefab;
 
+    [SerializeField]
+    private GameObject WorldCube;
+
     private int WorldSize;
     
     // Use this for initialization
     void Start()
     {
         WorldSize = Globals.WorldSize;
+
+        //WorldCube.transform.position = new Vector3(WorldSize / 2, WorldSize / 2, WorldSize / 2);
+        //WorldCube.transform.localScale = new Vector3(WorldSize, WorldSize, WorldSize);
+        CreateCubeFrame();
+        CreateSoulmates();
+    }
+
+    private void CreateCubeFrame()
+    {
         for (int i = 0; i < WorldSize; i++)
         {
             for (int j = 0; j < WorldSize; j++)
             {
                 for (int k = 0; k < WorldSize; k++)
                 {
-                    if(WtfCounter(i, j, k) >= 2)
+                    if (WtfCounter(i, j, k) >= 2)
                     {
                         Vector3 blockPosition = new Vector3(i, j, k);
                         Instantiate(BlockPrefab, blockPosition, Quaternion.identity);
@@ -29,8 +41,6 @@ public class LevelCreationScript : MonoBehaviour {
                 }
             }
         }
-
-        CreateSoulmates();
     }
 
     private void CreateSoulmates()
