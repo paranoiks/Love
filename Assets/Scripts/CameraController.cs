@@ -26,6 +26,12 @@ public class CameraController : MonoBehaviour {
     [SerializeField]
     private GameObject CamerasParent;
 
+    [SerializeField]
+    private GameObject CameraHolder;
+
+    [SerializeField]
+    private GameObject MainCamera;
+
     private CameraPosition CurrentCameraPosition;
 
     private GameObject[,] CurrentGrid;
@@ -37,6 +43,10 @@ public class CameraController : MonoBehaviour {
         CurrentGrid = new GameObject[Globals.WorldSize, Globals.WorldSize];
 	}
 
+    /// <summary>
+    /// Handles the input from the keyboard
+    /// needs to be redone to work for touch devices
+    /// </summary>
     private void HandleInput()
     {
         if (Input.GetKeyDown(KeyCode.W)
@@ -45,6 +55,7 @@ public class CameraController : MonoBehaviour {
             CurrentCameraPosition = CameraPosition.CameraTop;
             CalculateNewGrid();
             UpdateSouls();
+            MainCamera.GetComponent<PerspectiveSwitcher>().BlendToMatrix(true);
             StartCoroutine(MoveCamera());
         }
         if (Input.GetKeyDown(KeyCode.S)
@@ -53,6 +64,7 @@ public class CameraController : MonoBehaviour {
             CurrentCameraPosition = CameraPosition.CameraFront;
             CalculateNewGrid();
             UpdateSouls();
+            MainCamera.GetComponent<PerspectiveSwitcher>().BlendToMatrix(true);
             StartCoroutine(MoveCamera());
         }
         if (Input.GetKeyDown(KeyCode.D)
@@ -61,23 +73,27 @@ public class CameraController : MonoBehaviour {
             CurrentCameraPosition = CameraPosition.CameraRight;
             CalculateNewGrid();
             UpdateSouls();
+            MainCamera.GetComponent<PerspectiveSwitcher>().BlendToMatrix(true);
             StartCoroutine(MoveCamera());
         }
         if (Input.GetKeyDown(KeyCode.Z)
             && CurrentCameraPosition != CameraPosition.CameraZoomedOut)
         {
             CurrentCameraPosition = CameraPosition.CameraZoomedOut;
+            MainCamera.GetComponent<PerspectiveSwitcher>().BlendToMatrix(false);
             StartCoroutine(MoveCamera());
         }
     }
 
+    /// <summary>
+    /// Coroutine to smoothly change the camera position and rotation
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator MoveCamera()
-    {
-        Vector3 startingPosition = Camera.main.transform.localPosition;
-        Vector3 startingRotation = Camera.main.transform.localRotation.eulerAngles;
-        
+    {        
         float frames = 60f;
         Transform targetTransform = null;
+        //find the target transform depending on the new CameraPosition
         switch (CurrentCameraPosition)
         {
             case CameraPosition.CameraFront:
@@ -93,68 +109,35 @@ public class CameraController : MonoBehaviour {
                 targetTransform = CameraZoomedOutTransform;
                 break;
         }
+
+        Vector3 startingPosition = CameraHolder.transform.localPosition;
+
         Vector3 targetRotation = targetTransform.rotation.eulerAngles;
-
-        Debug.Log(startingPosition + " " + targetTransform.localPosition);
+        
+        float degreesPerFrame = Quaternion.Angle(MainCamera.transform.localRotation, targetTransform.localRotation) / frames;
 
         for (int i = 0; i < frames; i++)
         {
-            float ratio = ((float)i) / frames;            
+            float ratio = ((float)i) / frames;        
             Vector3 position = startingPosition + (targetTransform.localPosition - startingPosition) * ratio;
-            //Vector3 newEulerAngles = new Vector3(targetRotation.x - startingRotation.x, targetRotation.y - startingRotation.y, targetRotation.z - startingRotation.z) * ratio;
 
-            Camera.main.transform.localPosition = position;                      
-            //Camera.main.transform.localRotation = Quaternion.Euler(newEulerAngles);
-
-            yield return null;
-        }
-
-        Camera.main.transform.localPosition = targetTransform.localPosition;
-
-        StartCoroutine(RotateCamera());
-    }
-
-    private IEnumerator RotateCamera()
-    {
-        Vector3 startingPosition = Camera.main.transform.localPosition;
-        Vector3 startingRotation = Camera.main.transform.localRotation.eulerAngles;
-
-        float frames = 60f;
-        Transform targetTransform = null;
-        switch (CurrentCameraPosition)
-        {
-            case CameraPosition.CameraFront:
-                targetTransform = CameraFrontTransform;
-                break;
-            case CameraPosition.CameraRight:
-                targetTransform = CameraRightTransform;
-                break;
-            case CameraPosition.CameraTop:
-                targetTransform = CameraTopTransform;
-                break;
-            case CameraPosition.CameraZoomedOut:
-                targetTransform = CameraZoomedOutTransform;
-                break;
-        }
-        Vector3 targetRotation = targetTransform.localRotation.eulerAngles;
-
-        //Debug.Log(startingPosition + " " + targetTransform.localPosition);
-
-        for (int i = 0; i < frames; i++)
-        {
-            float ratio = ((float)i) / frames;
-            //Vector3 position = startingPosition + (targetTransform.localPosition - startingPosition) * ratio;
-            Vector3 newEulerAngles = new Vector3(targetRotation.x - startingRotation.x, targetRotation.y - startingRotation.y, targetRotation.z - startingRotation.z) * ratio;
-
-            //Camera.main.transform.localPosition = position;
-            Camera.main.transform.localRotation = Quaternion.Euler(newEulerAngles);
+            //rotate the camera towards the desired rotation
+            Quaternion newRotation = Quaternion.RotateTowards(MainCamera.transform.localRotation, targetTransform.localRotation, degreesPerFrame);
+            
+            CameraHolder.transform.localPosition = position;
+            MainCamera.transform.localRotation = newRotation;
 
             yield return null;
         }
 
-        Camera.main.transform.localRotation = targetTransform.localRotation;
+        //set the position and rotation to the final ones to remove any errors and offsets
+        CameraHolder.transform.localPosition = targetTransform.localPosition;
+        MainCamera.transform.localRotation = targetTransform.localRotation;
     }
 
+    /// <summary>
+    /// Calculate the new 2D grid, based on the new perspective
+    /// </summary>
     private void CalculateNewGrid()
     {
         for(int i=0;i<Globals.WorldSize;i++)
@@ -180,6 +163,9 @@ public class CameraController : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Send the new grid and CameraPosition to the two souls
+    /// </summary>
     private void UpdateSouls()
     {
         var souls = GameObject.FindGameObjectsWithTag("Soul");
@@ -190,6 +176,11 @@ public class CameraController : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Simple function to get 2D coordinates from 3D vectors, based on the current point of view
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
     private Vector2 ConvertCoordinatesTo2D(Vector3 position)
     {
         Vector2 newPosition = Vector2.zero;

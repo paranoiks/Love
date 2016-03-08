@@ -40,4 +40,16 @@ public class PerspectiveSwitcher : MonoBehaviour
                 blender.BlendToMatrix(perspective, 1f);
         }
     }
+
+    public void BlendToMatrix(bool toOrtho)
+    {
+        if(toOrtho)
+        {
+            blender.BlendToMatrix(ortho, 1f);
+        }
+        else
+        {
+            blender.BlendToMatrix(perspective, 1f);
+        }
+    }
 }
