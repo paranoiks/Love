@@ -169,6 +169,7 @@ public class CameraController : MonoBehaviour {
         foreach(var block in blocks)
         {
             Vector2 newPosition = ConvertCoordinatesTo2D(block.transform.position);
+            block.GetComponent<Shape>().Pos2D = newPosition;
             CurrentGrid[(int)newPosition.x, (int)newPosition.y] = block;
         }
     }
