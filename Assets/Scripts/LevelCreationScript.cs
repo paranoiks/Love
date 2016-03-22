@@ -7,6 +7,9 @@ public class LevelCreationScript : MonoBehaviour {
     private GameObject BlockPrefab;
 
     [SerializeField]
+    private GameObject LevelEditorInvisibleBlock;
+
+    [SerializeField]
     private GameObject SoulPrefab;
 
     [SerializeField]
@@ -22,6 +25,7 @@ public class LevelCreationScript : MonoBehaviour {
         //WorldCube.transform.position = new Vector3(WorldSize / 2, WorldSize / 2, WorldSize / 2);
         //WorldCube.transform.localScale = new Vector3(WorldSize, WorldSize, WorldSize);
         CreateCubeFrame();
+        CreateLevelEditorBlocks();
         //CreateSoulmates();
     }
 
@@ -39,6 +43,18 @@ public class LevelCreationScript : MonoBehaviour {
                         Instantiate(BlockPrefab, blockPosition, Quaternion.identity);
                     }
                 }
+            }
+        }
+    }
+
+    private void CreateLevelEditorBlocks()
+    {
+        for(int i=0;i< WorldSize;i++)
+        {
+            for (int j = 0; j < WorldSize; j++)
+            {
+                float y = -1;
+                Instantiate(LevelEditorInvisibleBlock, new Vector3(i, y, j), Quaternion.identity);
             }
         }
     }

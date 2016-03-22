@@ -5,6 +5,7 @@ public class InputController : MonoBehaviour {
 
     private LevelEditor LevelEditorScript;
     private CameraController CameraControllerScript;
+    private UIController UIControllerScript;
 
     private bool EditMode = false;
 
@@ -12,6 +13,7 @@ public class InputController : MonoBehaviour {
 	void Start () {
         LevelEditorScript = GetComponent<LevelEditor>();
         CameraControllerScript = GetComponent<CameraController>();
+        UIControllerScript = GetComponent<UIController>();
 	}
 
     private void HandleMouseInput()
@@ -46,6 +48,12 @@ public class InputController : MonoBehaviour {
         {
             CameraControllerScript.TakeCameraAction(CameraAction.ZoomInFront);
         }
+
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            EditMode = true;
+            UIControllerScript.EditMode(true);
+        }
     }
 
     private void HandleMouseInputEdit()
@@ -55,12 +63,31 @@ public class InputController : MonoBehaviour {
             LevelEditorScript.MouseClicked(Input.mousePosition);
         }
     }
+
+    private void HandleKeyboardInputEdit()
+    {
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            EditMode = false;
+            UIControllerScript.EditMode(false);
+        }
+
+        if(Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            LevelEditorScript.LevelDepthP += 1;
+        }
+        if(Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            LevelEditorScript.LevelDepthP -= 1;
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
         if (EditMode)
         {
             HandleMouseInputEdit();
+            HandleKeyboardInputEdit();
         }
         else
         {
