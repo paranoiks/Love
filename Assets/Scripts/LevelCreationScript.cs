@@ -22,7 +22,7 @@ public class LevelCreationScript : MonoBehaviour {
         //WorldCube.transform.position = new Vector3(WorldSize / 2, WorldSize / 2, WorldSize / 2);
         //WorldCube.transform.localScale = new Vector3(WorldSize, WorldSize, WorldSize);
         CreateCubeFrame();
-        CreateSoulmates();
+        //CreateSoulmates();
     }
 
     private void CreateCubeFrame()

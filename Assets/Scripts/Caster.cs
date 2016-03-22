@@ -28,16 +28,14 @@ public class Caster : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         Shapes = FindObjectsOfType<Shape>();
-
-        Pins = new List<GameObject>();
-        CreateCircleMesh();
     }
 
     private void CreateCircleMesh()
     {
         //generate vertices
         List<Vector3> meshVertices = new List<Vector3>();
-        meshVertices.Add(Vector3.zero);
+        Vector3 firstVertex = new Vector3(0, 0, -transform.position.z);
+        meshVertices.Add(firstVertex);
         List<int> meshTriangles = new List<int>();
         Mesh mesh = new Mesh();
         for (int i = 0; i < 360; i+=3)
@@ -64,6 +62,7 @@ public class Caster : MonoBehaviour {
             }
             else
             {
+                currentVertexPosition.z = 0;
                 meshVertices.Add(currentVertexPosition);
             }
         }
@@ -85,8 +84,7 @@ public class Caster : MonoBehaviour {
         mesh.vertices = meshVertices.ToArray();
         mesh.triangles = meshTriangles.ToArray();
         mesh.RecalculateNormals();
-        GetComponent<MeshFilter>().mesh = mesh;       
-        
+        GetComponent<MeshFilter>().mesh = mesh;
     }
 
     private bool RaycastAgainstAllShapes(Vector3 target, out Vector2 resultPoint, out LineSegment2D resultLineSegment)
@@ -190,6 +188,5 @@ public class Caster : MonoBehaviour {
 	void Update () {
         HandleInput();
         //HandleTimer();
-        CreateCircleMesh();
     }
 }

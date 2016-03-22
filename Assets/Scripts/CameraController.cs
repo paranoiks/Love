@@ -9,6 +9,14 @@ public enum CameraPosition
     CameraZoomedOut
 }
 
+public enum CameraAction
+{
+    ZoomOut,
+    ZoomInTop,
+    ZoomInFront,
+    ZoomInRight
+}
+
 public class CameraController : MonoBehaviour {
 
     [SerializeField]
@@ -46,52 +54,56 @@ public class CameraController : MonoBehaviour {
         CurrentGrid = new GameObject[Globals.WorldSize, Globals.WorldSize];
 	}
 
-    /// <summary>
-    /// Handles the input from the keyboard
-    /// needs to be redone to work for touch devices
-    /// </summary>
-    private void HandleInput()
+    public void TakeCameraAction(CameraAction action)
     {
         if(CameraMoving)
         {
             return;
         }
-        if (Input.GetKeyDown(KeyCode.W)
-            && CurrentCameraPosition == CameraPosition.CameraZoomedOut)
-        {            
-            CurrentCameraPosition = CameraPosition.CameraTop;
-            CalculateNewGrid();
-            UpdateSouls();
-            MainCamera.GetComponent<PerspectiveSwitcher>().BlendToMatrix(true);
-            StartCoroutine(MoveCamera());
-        }
-        if (Input.GetKeyDown(KeyCode.S)
-            && CurrentCameraPosition == CameraPosition.CameraZoomedOut)
+
+        switch(action)
         {
-            CurrentCameraPosition = CameraPosition.CameraFront;
-            CalculateNewGrid();
-            UpdateSouls();
-            MainCamera.GetComponent<PerspectiveSwitcher>().BlendToMatrix(true);
-            StartCoroutine(MoveCamera());
-        }
-        if (Input.GetKeyDown(KeyCode.D)
-            && CurrentCameraPosition == CameraPosition.CameraZoomedOut)
-        {
-            CurrentCameraPosition = CameraPosition.CameraRight;
-            CalculateNewGrid();
-            UpdateSouls();
-            MainCamera.GetComponent<PerspectiveSwitcher>().BlendToMatrix(true);
-            StartCoroutine(MoveCamera());
-        }
-        if (Input.GetKeyDown(KeyCode.Z)
-            && CurrentCameraPosition != CameraPosition.CameraZoomedOut)
-        {
-            CurrentCameraPosition = CameraPosition.CameraZoomedOut;
-            MainCamera.GetComponent<PerspectiveSwitcher>().BlendToMatrix(false);
-            StartCoroutine(MoveCamera());
+            case CameraAction.ZoomInFront:
+                if(CurrentCameraPosition == CameraPosition.CameraZoomedOut)
+                {
+                    CurrentCameraPosition = CameraPosition.CameraFront;
+                    CalculateNewGrid();
+                    UpdateSouls();
+                    MainCamera.GetComponent<PerspectiveSwitcher>().BlendToMatrix(true);
+                    StartCoroutine(MoveCamera());
+                }
+                break;
+            case CameraAction.ZoomInRight:
+                if (CurrentCameraPosition == CameraPosition.CameraZoomedOut)
+                {
+                    CurrentCameraPosition = CameraPosition.CameraRight;
+                    CalculateNewGrid();
+                    UpdateSouls();
+                    MainCamera.GetComponent<PerspectiveSwitcher>().BlendToMatrix(true);
+                    StartCoroutine(MoveCamera());
+                }
+                break;
+            case CameraAction.ZoomInTop:
+                if (CurrentCameraPosition == CameraPosition.CameraZoomedOut)
+                {
+                    CurrentCameraPosition = CameraPosition.CameraTop;
+                    CalculateNewGrid();
+                    UpdateSouls();
+                    MainCamera.GetComponent<PerspectiveSwitcher>().BlendToMatrix(true);
+                    StartCoroutine(MoveCamera());
+                }
+                break;
+            case CameraAction.ZoomOut:
+                if(CurrentCameraPosition != CameraPosition.CameraZoomedOut)
+                {
+                    CurrentCameraPosition = CameraPosition.CameraZoomedOut;
+                    MainCamera.GetComponent<PerspectiveSwitcher>().BlendToMatrix(false);
+                    StartCoroutine(MoveCamera());
+                }
+                break;
         }
     }
-
+    
     /// <summary>
     /// Coroutine to smoothly change the camera position and rotation
     /// </summary>
@@ -216,6 +228,5 @@ public class CameraController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        HandleInput();
 	}
 }
