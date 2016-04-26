@@ -1,7 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class InputController : MonoBehaviour {
+
+    [SerializeField]
+    private Button ButtonZoomOut;
+
+    [SerializeField]
+    private Button ButtonZoomInTop;
+
+    [SerializeField]
+    private Button ButtonZoomInRight;
+
+    [SerializeField]
+    private Button ButtonZoomInFront;
 
     private LevelEditor LevelEditorScript;
     private CameraController CameraControllerScript;
@@ -14,7 +27,31 @@ public class InputController : MonoBehaviour {
         LevelEditorScript = GetComponent<LevelEditor>();
         CameraControllerScript = GetComponent<CameraController>();
         UIControllerScript = GetComponent<UIController>();
+
+        ButtonZoomOut.onClick.AddListener(() => CameraActionButtonClicked(CameraAction.ZoomOut));
+        ButtonZoomInTop.onClick.AddListener(() => CameraActionButtonClicked(CameraAction.ZoomInTop));
+        ButtonZoomInRight.onClick.AddListener(() => CameraActionButtonClicked(CameraAction.ZoomInRight));
+        ButtonZoomInFront.onClick.AddListener(() => CameraActionButtonClicked(CameraAction.ZoomInFront));
 	}
+
+    private void CameraActionButtonClicked(CameraAction action)
+    {
+        switch(action)
+        {
+            case CameraAction.ZoomOut:
+                CameraControllerScript.TakeCameraAction(CameraAction.ZoomOut);
+                break;
+            case CameraAction.ZoomInTop:
+                CameraControllerScript.TakeCameraAction(CameraAction.ZoomInTop);
+                break;
+            case CameraAction.ZoomInRight:
+                CameraControllerScript.TakeCameraAction(CameraAction.ZoomInRight);
+                break;
+            case CameraAction.ZoomInFront:
+                CameraControllerScript.TakeCameraAction(CameraAction.ZoomInFront);
+                break;
+        }
+    }
 
     private void HandleMouseInput()
     {
