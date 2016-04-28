@@ -22,7 +22,7 @@ public class MatrixBlender : MonoBehaviour
             GetComponent<Camera>().projectionMatrix = MatrixLerp(src, dest, (Time.time - startTime) / duration);
             yield return 1;
         }
-        GetComponent<Camera>().projectionMatrix = dest;
+        GetComponent<Camera>().projectionMatrix = dest;        
     }
 
     public Coroutine BlendToMatrix(Matrix4x4 targetMatrix, float duration)

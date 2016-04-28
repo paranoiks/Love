@@ -33,14 +33,19 @@ public class CameraController : MonoBehaviour {
 
     [SerializeField]
     private GameObject CamerasParent;
-
-    [SerializeField]
-    private GameObject CameraHolder;
-
+    
     [SerializeField]
     private GameObject MainCamera;
 
     private CameraPosition CurrentCameraPosition;
+
+    public CameraPosition CurrentCameraPositionP
+    {
+        get
+        {
+            return CurrentCameraPosition;
+        }
+    }
 
     private GameObject[,] CurrentGrid;
 
@@ -48,9 +53,14 @@ public class CameraController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {       
-        CamerasParent.transform.position = new Vector3(Globals.WorldSize / 2, Globals.WorldSize / 2, Globals.WorldSize / 2);
+        //CamerasParent.transform.position = new Vector3(Globals.WorldSize / 2, Globals.WorldSize / 2, Globals.WorldSize / 2);
+        Vector3 cameraPositionOffset = new Vector3(Globals.WorldSize / 2, Globals.WorldSize / 2, Globals.WorldSize / 2);
+        CameraTopTransform.transform.position += cameraPositionOffset;
+        CameraRightTransform.transform.position += cameraPositionOffset;
+        CameraFrontTransform.transform.position += cameraPositionOffset;
+        CameraZoomedOutTransform.transform.position += cameraPositionOffset;
         CurrentCameraPosition = CameraPosition.CameraFront;
-        CameraHolder.transform.localPosition = CameraFrontTransform.localPosition;        
+        MainCamera.transform.localPosition = CameraFrontTransform.localPosition;        
         CurrentGrid = new GameObject[Globals.WorldSize, Globals.WorldSize];
 	}
 
@@ -130,7 +140,7 @@ public class CameraController : MonoBehaviour {
                 break;
         }
 
-        Vector3 startingPosition = CameraHolder.transform.localPosition;
+        Vector3 startingPosition = MainCamera.transform.localPosition;
 
         Vector3 targetRotation = targetTransform.rotation.eulerAngles;
         
@@ -143,15 +153,15 @@ public class CameraController : MonoBehaviour {
 
             //rotate the camera towards the desired rotation
             Quaternion newRotation = Quaternion.RotateTowards(MainCamera.transform.localRotation, targetTransform.localRotation, degreesPerFrame);
-            
-            CameraHolder.transform.localPosition = position;
+
+            MainCamera.transform.localPosition = position;
             MainCamera.transform.localRotation = newRotation;
 
             yield return null;
         }
 
         //set the position and rotation to the final ones to remove any errors and offsets
-        CameraHolder.transform.localPosition = targetTransform.localPosition;
+        MainCamera.transform.localPosition = targetTransform.localPosition;
         MainCamera.transform.localRotation = targetTransform.localRotation;
 
         CameraMoving = false;

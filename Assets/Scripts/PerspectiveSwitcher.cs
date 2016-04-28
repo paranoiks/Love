@@ -22,6 +22,7 @@ public class PerspectiveSwitcher : MonoBehaviour
     void Start()
     {
         aspect = (float)Screen.width / (float)Screen.height;
+        Debug.Log(aspect);
         ortho = Matrix4x4.Ortho(-orthographicSize * aspect, orthographicSize * aspect, -orthographicSize, orthographicSize, near, far);
         perspective = Matrix4x4.Perspective(fov, aspect, near, far);
         GetComponent<Camera>().projectionMatrix = ortho;
@@ -45,10 +46,12 @@ public class PerspectiveSwitcher : MonoBehaviour
     {
         if(toOrtho)
         {
+            GetComponent<Camera>().orthographic = true;
             blender.BlendToMatrix(ortho, 1.5f);
         }
         else
         {
+            GetComponent<Camera>().orthographic = false;
             blender.BlendToMatrix(perspective, 1.5f);
         }
     }

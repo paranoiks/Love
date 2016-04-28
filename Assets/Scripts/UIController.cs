@@ -27,6 +27,11 @@ public class UIController : MonoBehaviour {
         EditModeOnOffText.text = editModeString;
     }
 
+    public void EditModeAsDebug(string debugMsg)
+    {
+        EditModeOnOffText.text = debugMsg;
+    }
+
     public void NewLeveDepth(float newValue)
     {
         LevelDepthText.text = newValue.ToString();

@@ -13,7 +13,13 @@ public class LevelCreationScript : MonoBehaviour {
     private GameObject SoulPrefab;
 
     [SerializeField]
-    private GameObject WorldCube;
+    private GameObject SidePlaneTop;
+
+    [SerializeField]
+    private GameObject SidePlaneRight;
+
+    [SerializeField]
+    private GameObject SidePlaneFront;
 
     private int WorldSize;
     
@@ -26,6 +32,7 @@ public class LevelCreationScript : MonoBehaviour {
         //WorldCube.transform.localScale = new Vector3(WorldSize, WorldSize, WorldSize);
         CreateCubeFrame();
         CreateLevelEditorBlocks();
+        SetUpSidePlanes();
         //CreateSoulmates();
     }
 
@@ -57,6 +64,21 @@ public class LevelCreationScript : MonoBehaviour {
                 Instantiate(LevelEditorInvisibleBlock, new Vector3(i, y, j), Quaternion.identity);
             }
         }
+    }
+
+    private void SetUpSidePlanes()
+    {
+        Vector3 sidePlanesScale = new Vector3((float)WorldSize / 10, (float)WorldSize / 10, (float)WorldSize / 10);
+
+        SidePlaneTop.transform.localScale = sidePlanesScale;
+        SidePlaneFront.transform.localScale = sidePlanesScale;
+        SidePlaneRight.transform.localScale = sidePlanesScale;
+
+        float offset = (float)WorldSize / 2;
+
+        SidePlaneTop.transform.position = new Vector3(offset, 2 * offset, offset) - new Vector3(0.5f, 0, 0.5f);
+        SidePlaneRight.transform.position = new Vector3(2 * offset, offset, offset) - new Vector3(0, 0.5f, 0.5f);
+        SidePlaneFront.transform.position = new Vector3(offset, offset, 0) - new Vector3(0.5f, 0.5f, 1f);
     }
 
     private void CreateSoulmates()
