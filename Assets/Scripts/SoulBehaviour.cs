@@ -6,7 +6,7 @@ public class SoulBehaviour : MonoBehaviour {
     public GameObject Soulmate;
 
     [SerializeField]
-    private Caster SoundWave;
+    private GameObject ProjectilePrefab;
 
     private bool GridSet = false;
     public CameraPosition CurrentCameraPosition { get; set; }
@@ -37,87 +37,28 @@ public class SoulBehaviour : MonoBehaviour {
 
     public void Clicked()
     {
-        SoundWave.StartExpanding();
-    }
-
-    private void FindPath()
-    {
-        
-    }
+        SpawnProjectile();
+    }    
 
     // Update is called once per frame
     void Update () {
-	    if(Input.GetKeyDown(KeyCode.G))
-        {
-            CallMate();
-        }
+	   
 	}
 
-    public void Call()
+    public void SpawnProjectile()
     {
         if(!GridSet)
         {
             SetInitialGrid();
         }
-        Vector2 position2D = MathHelpers.ConvertCoordinatesTo2D(transform.position, CurrentCameraPosition);
-        position2D = new Vector2(Mathf.Round(position2D.x), Mathf.Round(position2D.y));
-        Vector2 soulmatePosition2D = MathHelpers.ConvertCoordinatesTo2D(Soulmate.transform.position, CurrentCameraPosition);
-        soulmatePosition2D = new Vector2(Mathf.Round(soulmatePosition2D.x), Mathf.Round(soulmatePosition2D.y));
 
-        bool match = false;
-        
-        if(position2D.x == soulmatePosition2D.x || position2D.y == soulmatePosition2D.y)
-        {
-            bool xMatch = true;
-            if (position2D.x != soulmatePosition2D.x)
-            {
-                //check on X axis                
-                for (int i = (int)Mathf.Min(position2D.x, soulmatePosition2D.x) + 1; i < (int)Mathf.Max(position2D.x, soulmatePosition2D.x); i++)
-                {
-                    if (CurrentGrid[i, (int)position2D.y] != null)
-                    {
-                        xMatch = false;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                xMatch = false;
-            }
+        Vector3 thisSoulPosition = MathHelpers.GetWorldCoordinatesFlatened(transform.position, CurrentCameraPosition);
+        Vector3 soulmatePosition = MathHelpers.GetWorldCoordinatesFlatened(Soulmate.transform.position, CurrentCameraPosition);
 
-            bool yMatch = true;
-            if (position2D.y != soulmatePosition2D.y)
-            {                
-                //check on Y axis
-                for (int i = (int)Mathf.Min(position2D.y, soulmatePosition2D.y) + 1; i < (int)Mathf.Max(position2D.y, soulmatePosition2D.y); i++)
-                {
-                    if (CurrentGrid[(int)position2D.x, i] != null)
-                    {
-                        yMatch = false;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                yMatch = false;
-            }
-            match = xMatch || yMatch;
-        }
+        GameObject projectile = Instantiate(ProjectilePrefab, thisSoulPosition, Quaternion.identity) as GameObject;
+        projectile.GetComponent<Projectile>().StartingSoulPositionP = thisSoulPosition;
+        projectile.GetComponent<Projectile>().TargetSoulPositionP = soulmatePosition;
+    }    
 
-        if(match)
-        {
-            Debug.Log("YEY");
-        }
-        else
-        {
-            Debug.Log("SAD");
-        }
-    }
 
-    private void CallMate()
-    {
-        Soulmate.GetComponent<SoulBehaviour>().Call();
-    }
 }

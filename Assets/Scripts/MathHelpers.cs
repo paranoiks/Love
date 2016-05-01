@@ -30,8 +30,42 @@ public class MathHelpers {
                 newPosition.x = position.x;
                 newPosition.y = position.z;
                 break;
-        }
+        }        
 
         return newPosition;
+    }
+
+    public static Vector3 GetWorldCoordinatesFlatened(Vector3 point, CameraPosition cameraPosition)
+    {
+        float worldSize = Globals.WorldSize;
+        switch(cameraPosition)
+        {
+            case CameraPosition.CameraFront:
+                point.z = 0;
+                break;
+            case CameraPosition.CameraRight:
+                point.x = worldSize;
+                break;
+            case CameraPosition.CameraTop:
+                point.y = worldSize;
+                break;
+        }
+
+        return point;
+    }
+
+    public static Vector3 GetRaycastDirectionFromCameraPosition(CameraPosition cameraPosition)
+    {
+        switch (cameraPosition)
+        {
+            case CameraPosition.CameraFront:
+                return new Vector3(0, 0, 1);
+            case CameraPosition.CameraRight:
+                return new Vector3(-1, 0, 0);
+            case CameraPosition.CameraTop:
+                return new Vector3(0, -1, 0);
+            default:
+                return Vector3.zero;
+        }
     }
 }

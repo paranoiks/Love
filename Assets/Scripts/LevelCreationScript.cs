@@ -33,7 +33,8 @@ public class LevelCreationScript : MonoBehaviour {
         CreateCubeFrame();
         CreateLevelEditorBlocks();
         SetUpSidePlanes();
-        //CreateSoulmates();
+        CreateSoulmates();
+        CreateTestBlock();
     }
 
     private void CreateCubeFrame()
@@ -87,9 +88,11 @@ public class LevelCreationScript : MonoBehaviour {
         GameObject s2 = Instantiate(SoulPrefab, new Vector3(6, 4, 3), Quaternion.identity) as GameObject;
         s1.GetComponent<SoulBehaviour>().Soulmate = s2;
         s2.GetComponent<SoulBehaviour>().Soulmate = s1;
+    }
 
+    private void CreateTestBlock()
+    {
         GameObject block = Instantiate(BlockPrefab, new Vector3(4, 4, 2), Quaternion.identity) as GameObject;
-        block.name = "ASDASDAS";
     }
 
     private int WtfCounter(int a,int b, int c)

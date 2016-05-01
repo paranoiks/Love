@@ -44,9 +44,7 @@ public class InputController : MonoBehaviour {
             {
                 
                 Ray touchRay = Camera.main.ScreenPointToRay(Input.touches[0].position);
-
-                UIControllerScript.EditModeAsDebug(Input.touches[0].position.ToString() + " " + Camera.main.ScreenToWorldPoint(Input.touches[0].position).ToString());
-                                
+                                                
                 RaycastHit hitInfo;
                 int layerMask = 1 << LayerMask.NameToLayer("SidePlanes");
                 if(Physics.Raycast(touchRay, out hitInfo, 500, layerMask))
@@ -68,7 +66,13 @@ public class InputController : MonoBehaviour {
             }
             else
             {
-
+                Ray ray = Camera.main.ScreenPointToRay(Input.touches[0].position);
+                RaycastHit hitInfo;
+                int layerMask = 1 << LayerMask.NameToLayer("Soul");
+                if (Physics.Raycast(ray, out hitInfo, 10000, layerMask))
+                {
+                    hitInfo.collider.gameObject.GetComponent<SoulBehaviour>().Clicked();
+                }
             }
         }
     }
@@ -83,11 +87,9 @@ public class InputController : MonoBehaviour {
     {
         if(Input.GetMouseButtonDown(0))
         {
-            if(CameraControllerScript.CurrentCameraPositionP == CameraPosition.CameraZoomedOut)
+            if (CameraControllerScript.CurrentCameraPositionP == CameraPosition.CameraZoomedOut)
             {
                 Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-                Debug.Log(Camera.main.projectionMatrix);
-                Instantiate(DebugBlock, Camera.main.ScreenToWorldPoint(Input.mousePosition), Quaternion.identity);
                 RaycastHit mouseHitInfo;
                 int mouseLayerMask = 1 << LayerMask.NameToLayer("SidePlanes");
                 if (Physics.Raycast(mouseRay, out mouseHitInfo, 500, mouseLayerMask))
@@ -106,17 +108,16 @@ public class InputController : MonoBehaviour {
                             break;
                     }
                 }
-            }   
+            }
             else
-            {
-
-            }         
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hitInfo;
-            int layerMask = 1 << LayerMask.NameToLayer("Soul");
-            if (Physics.Raycast(ray, out hitInfo, 10000, layerMask))
-            {
-                hitInfo.collider.gameObject.GetComponent<SoulBehaviour>().Clicked();
+            {                
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hitInfo;
+                int layerMask = 1 << LayerMask.NameToLayer("Soul");
+                if (Physics.Raycast(ray, out hitInfo, 10000, layerMask))
+                {                    
+                    hitInfo.collider.gameObject.GetComponent<SoulBehaviour>().Clicked();
+                }
             }
         }
     }
