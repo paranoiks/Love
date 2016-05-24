@@ -13,6 +13,8 @@ public class Projectile : MonoBehaviour {
     private Vector3 StartingSoulPosition;
     private Vector3 TargetSoulPosition;
 
+    public SoulBehaviour SoulParent { get; set; }
+
     private CameraPosition CurrentCameraPosition;
 
     public Vector3 StartingSoulPositionP
@@ -83,6 +85,7 @@ public class Projectile : MonoBehaviour {
 
     private void GoalReached()
     {
+        SoulParent.ProjectileReachedOtherSoul();
         Destroy(gameObject);
     }
     

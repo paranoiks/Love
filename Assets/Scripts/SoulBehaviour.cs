@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class SoulBehaviour : MonoBehaviour {
 
@@ -7,6 +8,12 @@ public class SoulBehaviour : MonoBehaviour {
 
     [SerializeField]
     private GameObject ProjectilePrefab;
+
+    [SerializeField]
+    private float MovingSpeed;
+
+    [SerializeField]
+    private float MovementTreshold;
 
     private bool GridSet = false;
     public CameraPosition CurrentCameraPosition { get; set; }
@@ -40,10 +47,40 @@ public class SoulBehaviour : MonoBehaviour {
         SpawnProjectile();
     }    
 
-    // Update is called once per frame
-    void Update () {
-	   
-	}
+    public void ProjectileReachedOtherSoul()
+    {
+        Debug.Log("PROJECTILE REACHED OTHER SOUL");
+        Vector3 thisSoulPosition = MathHelpers.GetWorldCoordinatesFlatened(transform.position, CurrentCameraPosition);
+        Vector3 soulmatePosition = MathHelpers.GetWorldCoordinatesFlatened(Soulmate.transform.position, CurrentCameraPosition);
+
+        Vector3 meetingPoint = thisSoulPosition + (soulmatePosition - thisSoulPosition) / 2;
+
+        StartMovingTowardsMeetingPoint(meetingPoint);
+        Soulmate.GetComponent<SoulBehaviour>().StartMovingTowardsMeetingPoint(meetingPoint);
+    }
+
+    private IEnumerator MoveTowardsMeetingPoint(Vector3 meetingPoint)
+    {
+        while (true)
+        {
+            Vector3 direction = meetingPoint - transform.position;
+            direction.Normalize();
+            transform.position += direction * MovingSpeed * Time.deltaTime;
+
+            if (Vector3.Distance(transform.position, meetingPoint) < MovementTreshold)
+            {
+                Debug.Log("GG LEVEL SOLVED");
+                break;
+            }
+
+            yield return null;
+        }
+    }
+
+    public void StartMovingTowardsMeetingPoint(Vector3 meetingPoint)
+    {
+        StartCoroutine(MoveTowardsMeetingPoint(meetingPoint));
+    }
 
     public void SpawnProjectile()
     {
@@ -55,9 +92,10 @@ public class SoulBehaviour : MonoBehaviour {
         Vector3 thisSoulPosition = MathHelpers.GetWorldCoordinatesFlatened(transform.position, CurrentCameraPosition);
         Vector3 soulmatePosition = MathHelpers.GetWorldCoordinatesFlatened(Soulmate.transform.position, CurrentCameraPosition);
 
-        GameObject projectile = Instantiate(ProjectilePrefab, thisSoulPosition, Quaternion.identity) as GameObject;
-        projectile.GetComponent<Projectile>().StartingSoulPositionP = thisSoulPosition;
-        projectile.GetComponent<Projectile>().TargetSoulPositionP = soulmatePosition;
+        Projectile projectile = (Instantiate(ProjectilePrefab, thisSoulPosition, Quaternion.identity) as GameObject).GetComponent<Projectile>();
+        projectile.SoulParent = this;
+        projectile.StartingSoulPositionP = thisSoulPosition;
+        projectile.TargetSoulPositionP = soulmatePosition;
     }    
 
 
